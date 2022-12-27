@@ -6,7 +6,7 @@ server:
 
 spring:
     datasource:
-        url: jdbc:mysql://121.4.61.205:3306/backtest
+        url: jdbc:mysql://49.235.140.18:3306/backend
         username: root
         password: 123456
 
