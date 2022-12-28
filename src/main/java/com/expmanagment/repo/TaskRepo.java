@@ -2,13 +2,17 @@ package com.expmanagment.repo;
 
 import com.expmanagment.entity.TaskEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
 import com.expmanagment.entity.TakesEntity;
 import com.expmanagment.entity.FinishesEntity;
+
+import javax.transaction.Transactional;
 
 
 /**
@@ -42,5 +46,29 @@ public interface TaskRepo extends JpaRepository<TaskEntity, Integer> {
             "order by t1.deadline asc nulls last")
     public Optional<List<Object>> findAllByCourseIdAndUnfinishedOrderByDeadlineAsc(Integer studentId);
 
+    @Query(value = "select t2.studentId, t2.courseId, c.name as courseName, " +
+            "t1.id as taskId, t1.name as taskName, t1.deadline, t1.type " +
+            "from TaskEntity t1, TakesEntity t2, CourseEntity c, FinishesEntity f " +
+            "where t1.courseId = t2.courseId and t1.courseId = c.id " +
+            "and t2.studentId = ?1 " +
+            "and t2.studentId = f.studentId and t1.id = f.taskId " +
+            "and f.finished = 1 " +
+            "order by t1.deadline asc nulls last")
+    public Optional<List<Object>> findAllByCourseIdAndFinishedOrderByDeadlineAsc(Integer studentId);
+
+    /**
+     * 修改task的详细信息
+     * @param id
+     * @param courseId
+     * @param name
+     * @param description
+     * @param deadline
+     * @param type
+     * @param url
+     */
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update TaskEntity s set s.courseId = ?2,s.name=?3,s.description=?4,s.deadline =?5,s.type=?6 ,s.url=?7 where s.id = ?1")
+    void updateTaskInformation(int id, Integer courseId, String name, String description, Date deadline, Integer type, String url);
 
 }
