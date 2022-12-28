@@ -1,10 +1,18 @@
 package com.expmanagment.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import com.alibaba.fastjson.JSONObject;
+import com.expmanagment.entity.FinishesEntity;
+import com.expmanagment.entity.UserEntity;
+import com.expmanagment.service.FileStorageService;
+import com.expmanagment.service.FinishesService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Api(tags = "作业管理")
 @RestController
@@ -71,7 +79,7 @@ public class FinishesController {
     @SaCheckLogin
     @ApiOperation("提交大型实验报告")
     @PostMapping("/upload/complex")
-    public JSONObject submitComplexTask(@RequestParam("file")MultipartFile file,
+    public JSONObject submitComplexTask(@RequestParam("file") MultipartFile file,
                                         Integer studentId,
                                         Integer taskId,
                                         String location) {

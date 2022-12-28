@@ -6,7 +6,7 @@ import com.expmanagment.exception.TaskNotFoundException;
 import com.expmanagment.entity.FileEntity;
 import com.expmanagment.entity.TakesEntity;
 import com.expmanagment.entity.TaskEntity;
-import com.expmanagment.entity.TestContext;
+import com.expmanagment.entity.TestContextEntity;
 import com.expmanagment.repo.FileRepo;
 import com.expmanagment.repo.TaskRepo;
 import lombok.AllArgsConstructor;
@@ -31,23 +31,23 @@ import java.util.Optional;
 @Slf4j
 public class FileService {
 
-    private final FileRepository fileRepository;
-    private final TaskRepository taskRepository;
+    private final FileRepo fileRepo;
+    private final TaskRepo taskRepo;
     private final FileStorageService fileStorageService;
 
     public String addFile(FileEntity file) {
-        Optional<FileEntity> fileTemp = fileRepository.findById(file.getUrl());
+        Optional<FileEntity> fileTemp = fileRepo.findById(file.getUrl());
         if (fileTemp.isPresent()) {
             throw new AlreadyExistException("该文件已存在");
         }
         else {
-            fileRepository.save(file);
+            fileRepo.save(file);
             return "文件加入成功";
         }
     }
 
     public JSONObject teacherUploadTaskGuide(MultipartFile file, int courseId, int taskId) {
-        Optional<TaskEntity> taskOptional = taskRepository.findById(taskId);
+        Optional<TaskEntity> taskOptional = taskRepo.findById(taskId);
         if (taskOptional.isEmpty()) {
             throw new TaskNotFoundException("该实验项目不存在");
         }
@@ -55,7 +55,7 @@ public class FileService {
         String fileName = fileStorageService.storeToSpecifiedDirectory(file, location);
         log.info("存储的文件名：" + fileName);
         taskOptional.get().setUrl(fileName);
-        taskRepository.save(taskOptional.get());
+        taskRepo.save(taskOptional.get());
         JSONObject json = new JSONObject();
         json.put("code", 200);
         json.put("msg", "文件上传成功");
@@ -65,7 +65,7 @@ public class FileService {
 
     public boolean checkExist(Integer id)
     {
-        Optional<FileEntity> fileTemp = fileRepository.findById(id);
+        Optional<FileEntity> fileTemp = fileRepo.findById(id);
 
         return fileTemp.isPresent();
     }
@@ -77,17 +77,17 @@ public class FileService {
      * @return
      * @throws Exception
      */
-    public List<TestContext> showExcelContext(InputStream excelFile, String fileName) throws Exception {
+    public List<TestContextEntity> showExcelContext(InputStream excelFile, String fileName) throws Exception {
         boolean flag = true;
         //创建Excel工作薄
         Workbook workbook = this.getWorkbook(excelFile,fileName);
         //选择Excel工作表的第一张表
         Sheet sheet = workbook.getSheetAt(0);
-        List<TestContext> testContexts =new ArrayList<>();
+        List<TestContextEntity> testContexts =new ArrayList<>();
 
         for(int nowRow = 2;nowRow <=sheet.getLastRowNum();nowRow ++)
         {
-            TestContext testContext = new TestContext();
+            TestContextEntity testContext = new TestContextEntity();
             Cell cell = sheet.getRow(nowRow).getCell(0);
             cell.setCellType(Cell.CELL_TYPE_STRING);
             testContext.Number = cell.getStringCellValue();
