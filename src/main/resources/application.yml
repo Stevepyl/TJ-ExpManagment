@@ -14,10 +14,10 @@ spring:
 
     #    redis???
     redis:
-        host: 101.132.138.14
+        host: 49.235.140.18
         port: 6379
         timeout: 20000
-        password: DRT1951725
+        password: LYP2053295
         database: 0
         lettuce:
             pool:

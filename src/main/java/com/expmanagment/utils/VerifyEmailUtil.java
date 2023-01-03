@@ -110,8 +110,6 @@ public class VerifyEmailUtil {
     public JSONObject sendVerificationEmail(String email, Integer userId) {
         String verifyCode = getPhoneCode();
         sendCode2Email(email, "【实验教学管理系统】账户激活", verifyCode);
-        // 若已存在该账号的激活记录，则移除
-        // 后面想了一下这个功能其实还可以在已经发送验证码之后用户再次要求的时候重新发送，然后之前的验证码作废，激活时间刷新。
         if (verificationCodeRepo.existsById(userId)) {
             verificationCodeRepo.deleteById(userId);
         }
